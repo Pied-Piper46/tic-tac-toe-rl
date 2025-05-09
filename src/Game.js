@@ -155,12 +155,11 @@ function Game() {
         newBoard[i] = playerMark;
         setBoard(newBoard);
 
-        const currentWinner = calculateWinner(newBoard);
-        if (currentWinner) {
-            setWinner(currentWinner);
+        const gameWinner = calculateWinner(newBoard);
+        if (gameWinner) {
+            setWinner(gameWinner);
         } else {
             setIsPlayerNext(false); // Switch to AI's turn
-            // TODO: AI logic to make a move
         }
     };
 
@@ -168,22 +167,27 @@ function Game() {
     useEffect(() => {
         if (!isPlayerNext && !winner && !isLoading && gameStarted) {
             // Call AI logic
-            // const aiMove = getAIMove(board, qTable);
-            // if (aiMove !== null) {
-            //     const newBoard = board.slice();
-            //     newBoard[aiMove] = aiMark;
-            //     setBoard(newBoard);
-            //     const currentWinner = calculateWinner(newBoard);
-            //     if (currentWinner) {
-            //         setWinner(currentWinner);
-            //     } else {
-            //         setIsPlayerNext(true); // Switch back to player's turn
-            //     }
-            // }
-            // For now
-            console.log("AI's turn"); // Temporary placeholder
+            const aiMove = getAIMove(board);
+
+            // Pretend AI thinks for a moment
             setTimeout(() => {
-                if (!calculateWinner(board)) setIsPlayerNext(true);
+                if (aiMove !== null && board[aiMove] === null) {
+                    const newBoard = board.slice();
+                    newBoard[aiMove] = aiMark;
+                    setBoard(newBoard);
+
+                    const gameWinner = calculateWinner(newBoard);
+                    if (gameWinner) {
+                        setWinner(gameWinner);
+                    } else {
+                        setIsPlayerNext(true);
+                    }
+                } else if (calculateWinner(board) === 'draw' && !winner) {
+                    setWinner('draw');
+                } else if (aiMove === null && getAvailableMoves(board).length > 0) {
+                    console.error('AI move is null, but there are still available moves. This should not happen.');
+                    setIsPlayerNext(true);
+                }
             }, 500);
         }
     }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
