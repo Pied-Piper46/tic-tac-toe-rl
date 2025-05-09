@@ -140,7 +140,7 @@ def train(num_episodes=10000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_
 
 if __name__ == '__main__':
     # パラメータ設定
-    episodes = 2000      # 学習エピソード数
+    episodes = 20000      # 学習エピソード数
     alpha_val = 0.1       # 学習率
     gamma_val = 0.99      # 割引率
     epsilon_s = 1.0       # 初期ε
