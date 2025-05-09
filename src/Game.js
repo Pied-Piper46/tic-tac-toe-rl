@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Board from './Board';
+import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
 
-// default Q-table file path
-const DEFAULT_Q_TABLE_FILE = 'q_table_normal.json';
+// The first model which is defined in ModelSelector.js will be a default model
+// Ajust the model name if you change the order of models in ModelSelector.js
+const initialModelFile = 'q_table_easy.json';
 
 function Game() {
     const [board, setBoard] = useState(initialBoard());
@@ -12,7 +14,7 @@ function Game() {
     // TODO: read q table, ai logic, model selection
     const [qTable, setQTable] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentQTableFile, setCurrentQTableFile] = useState(DEFAULT_Q_TABLE_FILE);
+    const [currentQTableFile, setCurrentQTableFile] = useState(initialModelFile);
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
@@ -41,7 +43,7 @@ function Game() {
 
     const handleModelChange = (newModelFile) => {
         setCurrentQTableFile(newModelFile);
-        setGameStarted(false);
+        resetGameToSetup();
     };
 
 
@@ -192,12 +194,13 @@ function Game() {
         }
     }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
 
-    const restartGame = () => {
-        setBoard(initialBoard());
-        setIsPlayerNext(true);
-        setWinner(null);
-        // TODO: Keep the state of model selection
-    };
+    // const restartGame = () => {
+    //     setBoard(initialBoard());
+    //     setIsPlayerNext(true);
+    //     setWinner(null);
+    //     // TODO: Keep the state of model selection
+    // };
+
 
     let status;
     if (isLoading && !gameStarted) {
@@ -218,11 +221,11 @@ function Game() {
         return (
             <div className="game-setup">
                 <h1> Tic Tac Toe (vs AI) </h1>
-                {/* <ModelSelector
+                <ModelSelector
                     currentModelFile={currentQTableFile}
                     onChangeModel={handleModelChange}
-                    disabled={isLoading}
-                />*/}
+                    disabled={isLoading || (!isPlayerNext && !winner)}
+                />
                 <h2> First or Second?</h2>
                 <button onClick={() => startGame(true)} disabled={isLoading}> First Player (X)</button>
                 <button onClick={() => startGame(false)} disabled={isLoading}> Second Player (O)</button>
@@ -237,7 +240,7 @@ function Game() {
             <Board squares={board} onClick={handleClick} />
             <div className="game-info">
                 <div>{status}</div>
-                <button onClick={restartGame}>Restart Game</button>
+                <button onClick={resetGameToSetup}>Restart Game</button>
             </div>
             {/* TODO: Add model selection UI */}
         </div>
