@@ -11,7 +11,6 @@ function Game() {
     const [board, setBoard] = useState(initialBoard());
     const [isPlayerNext, setIsPlayerNext] = useState(true); // true if it's player's turn
     const [winner, setWinner] = useState(null);
-    // TODO: read q table, ai logic, model selection
     const [qTable, setQTable] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentQTableFile, setCurrentQTableFile] = useState(initialModelFile);
@@ -193,13 +192,6 @@ function Game() {
             }, 500);
         }
     }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
-
-    // const restartGame = () => {
-    //     setBoard(initialBoard());
-    //     setIsPlayerNext(true);
-    //     setWinner(null);
-    //     // TODO: Keep the state of model selection
-    // };
 
 
     let status;
