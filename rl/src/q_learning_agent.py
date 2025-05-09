@@ -84,7 +84,8 @@ class QLearningAgent:
         """ QテーブルをJSONファイルとして保存 """
         # defaultdictは直接JSONにできないので、通常のdictに変換
         # state_tuple (タプルキー) も文字列に変換
-        q_table_serializable = {str(k): list(v) for k, v in self.q_table.items()}
+        # 各要素をintに変換してからタプルを文字列化する
+        q_table_serializable = {str(tuple(map(int, k))): list(v) for k, v in self.q_table.items()}
         with open(filename, 'w') as f:
             json.dump(q_table_serializable, f)
         print(f"Q-table saved to {filename}")
