@@ -23,14 +23,13 @@ export const calculateWinner = (squares) => {
 };
 
 // helper function to convert board state to key string for q table
-export const boardToQTableKey = (squares, markMapping) => {
-    // markMapping: an Object like { 'X': -1, 'O': 1, null: 0 }
+export const boardToQTableKey = (squares) => {
     const qState = squares.map(s => {
-        if (s === markMapping.player1Mark)
-            return markMapping.player1MarkValue; // ex: 'X' => -1
-        if (s === markMapping.player2Mark)
-            return markMapping.player2MarkValue; // ex: 'O' => 1
-        return 0; // ex: null => 0
+        if (s === 'O')
+            return 1;
+        if (s === 'X')
+            return -1;
+        return 0;
     });
     // expected python output of str(tuple): '(0, 1, -1)'
     return `(${qState.join(', ')})`;
