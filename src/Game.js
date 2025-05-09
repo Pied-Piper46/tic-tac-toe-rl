@@ -7,15 +7,16 @@ const DEFAULT_Q_TABLE_FILE = 'q_table_normal.json';
 
 function Game() {
     const [board, setBoard] = useState(initialBoard());
-    const [isPlayerNext, setIsPlayerNext] = useState(true);
+    const [isPlayerNext, setIsPlayerNext] = useState(true); // true if it's player's turn
     const [winner, setWinner] = useState(null);
     // TODO: read q table, ai logic, model selection
     const [qTable, setQTable] = useState(null);
     const [isLoading, setLoading] = useState(true);
     const [currentQTableFile, setCurrentQTableFile] = useState(DEFAULT_Q_TABLE_FILE);
+    const [playerMark, setPlayerMark] = useState('X'); // human player
+    const [aiMark, setAiMark] = useState('O'); // AI player
+    const [gameStarted, setGameStarted] = useState(false); // true if game has started
 
-    const playerMark = 'X'; // human player
-    const aiMark = '0'; // AI player
 
     // Load Q-table from a file
     useEffect(() => {
@@ -155,6 +156,23 @@ function Game() {
         }
     } else {
         status = 'Next player: ' + (isPlayerNext ? playerMark : aiMark);
+    }
+
+    if (!gameStarted) {
+        return (
+            <div className="game-setup">
+                <h1> Tic Tac Toe (vs AI) </h1>
+                <ModelSelector
+                    currentModelFile={currentQTableFile}
+                    onChangeModel={handleModelChange}
+                    disabled={isLoading}
+                />
+                <h2> First or Second?</h2>
+                <button onClick={() => startGame(true)} disabled={isLoading}> First Player (X)</button>
+                <button onClick={() => startGame(false)} disabled={isLoading}> Second Player (O)</button>
+                {isLoading && <p>Loading Q-table...</p>}
+            </div>
+        );
     }
 
     return (
