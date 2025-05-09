@@ -34,3 +34,13 @@ export const boardToQTableKey = (squares) => {
     // expected python output of str(tuple): '(0, 1, -1)'
     return `(${qState.join(', ')})`;
 };
+
+export const getAvailableMoves = (squares) => {
+    const moves = [];
+    squares.forEach((square, index) => {
+        if (square === null) {
+            moves.push(index);
+        }
+    });
+    return moves;
+}
