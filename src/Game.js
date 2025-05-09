@@ -11,7 +11,7 @@ function Game() {
     const [winner, setWinner] = useState(null);
     // TODO: read q table, ai logic, model selection
     const [qTable, setQTable] = useState(null);
-    const [isLoading, setLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
     const [currentQTableFile, setCurrentQTableFile] = useState(DEFAULT_Q_TABLE_FILE);
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
@@ -218,11 +218,11 @@ function Game() {
         return (
             <div className="game-setup">
                 <h1> Tic Tac Toe (vs AI) </h1>
-                <ModelSelector
+                {/* <ModelSelector
                     currentModelFile={currentQTableFile}
                     onChangeModel={handleModelChange}
                     disabled={isLoading}
-                />
+                />*/}
                 <h2> First or Second?</h2>
                 <button onClick={() => startGame(true)} disabled={isLoading}> First Player (X)</button>
                 <button onClick={() => startGame(false)} disabled={isLoading}> Second Player (O)</button>
