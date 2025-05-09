@@ -18,6 +18,33 @@ function Game() {
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
 
 
+    const startGame = (playerIsFirst) => {
+        setBoard(initialBoard());
+        setWinner(null);
+        if (playerIsFirst) {
+            setPlayerMark('X');
+            setAiMark('O');
+            setIsPlayerNext(true);
+        } else {
+            setPlayerMark('O');
+            setAiMark('X');
+            setIsPlayerNext(false);
+        }
+        setGameStarted(true);
+    };
+
+    const resetGameToSetup = () => {
+        setGameStarted(false);
+        setBoard(initialBoard());
+        setWinner(null);
+    };
+
+    const handleModelChange = (newModelFile) => {
+        setCurrentQTableFile(newModelFile);
+        setGameStarted(false);
+    };
+
+
     // Load Q-table from a file
     useEffect(() => {
         const loadQTable = async () => {
@@ -53,6 +80,26 @@ function Game() {
         return Array(9).fill(0); // Default Q values if stateKey not found
     }, [qTable]);
 
+
+    // Dynamic mapping of player and AI marks
+    const getMarkMapping = useCallback(() => {
+        // Since Player1 is always 1('O'), Player2 is always -1('X') in Q-table,
+        // we need to map them to the actual marks used in the game
+        if (aiMark === 'O') { // AI is 'O' (player 1 in Q-table)
+            return {
+                player1Mark: 'O', player1Value: 1,
+                player2Mark: 'X', player2Value: -1
+            };
+        } else { // AI is 'X' (player 2 in Q-table)
+                 // need to swap the marks since Q-table values are always viewed by player 1
+            return {
+                player1Mark: 'X', player1Value: 1,
+                player2Mark: 'O', player2Value: -1
+                // depending on the definition of Q-table
+            };
+        }  
+    }, [aiMark]);
+
     
     // AI logic
     const getAIMove = useCallback((currentBoard) => {
@@ -62,7 +109,12 @@ function Game() {
             return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : null;    
         }
 
-        const stateKey = boardToQTableKey(currentBoard, aiMark, playerMark);
+        const qTableConsistentMapping = {
+            player1Mark: 'O', player1Value: 1,
+            player2Mark: 'X', player2Value: -1
+        };
+
+        const stateKey = boardToQTableKey(currentBoard, qTableConsistentMapping);
         const qValues = getQValues(stateKey);
         const availableMoves = getAvailableMoves(currentBoard);
 
@@ -91,16 +143,12 @@ function Game() {
         console.log(`State: ${stateKey}, Q-values: [${qValues.map(v => v.toFixed(2)).join(', ')}], Available: [${availableMoves.join(', ')}], Chosen move: ${bestMove} (Q: ${maxQValue.toFixed(2)})`);
 
         return bestMove;
-    }, [qTable, getQValues, aiMark, playerMark]);
+    }, [qTable, getQValues]);
 
 
     const handleClick = (i) => {
-        if (winner || board[i]) { // Ignore click if game is over or cell is already filled
+        if (isLoading || winner || board[i] || !isPlayerNext || !gameStarted) { // Ignore click if game is over or cell is already filled
             return;
-        }
-
-        if (!isPlayerNext) {
-            return; // Ignore click if it's not the player's turn
         }
 
         const newBoard = board.slice();
@@ -118,7 +166,7 @@ function Game() {
 
     // AI turn (implement details later)
     useEffect(() => {
-        if (!isPlayerNext && !winner) {
+        if (!isPlayerNext && !winner && !isLoading && gameStarted) {
             // Call AI logic
             // const aiMove = getAIMove(board, qTable);
             // if (aiMove !== null) {
@@ -138,7 +186,7 @@ function Game() {
                 if (!calculateWinner(board)) setIsPlayerNext(true);
             }, 500);
         }
-    }, [isPlayerNext, board, winner, aiMark]);
+    }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
 
     const restartGame = () => {
         setBoard(initialBoard());
@@ -148,14 +196,18 @@ function Game() {
     };
 
     let status;
-    if (winner) {
+    if (isLoading && !gameStarted) {
+        status = 'Select a model and First/Second to start the game';
+    } else if (isLoading) {
+        status = 'Loading Q-table...';
+    } else if (winner) {
         if (winner === 'draw') {
             status = 'Draw!';
         } else {
-            status = 'Winner: ' + winner;
+            status = `Winner: ${winner === playerMark ? 'You' : 'AI'} (${winner})`;
         }
-    } else {
-        status = 'Next player: ' + (isPlayerNext ? playerMark : aiMark);
+    } else if (gameStarted) {
+        status = `Next player: ${isPlayerNext ? `You (${playerMark})` : `AI (${aiMark})`}`;
     }
 
     if (!gameStarted) {
