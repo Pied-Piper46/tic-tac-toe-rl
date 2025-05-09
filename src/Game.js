@@ -51,16 +51,17 @@ function Game() {
         const loadQTable = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`${process.env.PUBLIC_URL}/${currentQTableFile}`);
+                const response = await fetch(`/${currentQTableFile}`);
                 if (!response.ok) {
-                    throw new Error('Failed to lead Q-table(${currentQTableFile}): ${response.statusText}');
+                    throw new Error(`Failed to lead Q-table (${currentQTableFile}): ${response.statusText}`);
                 }
                 const data = await response.json();
+                console.log('Q-table data:', data);
                 // Convert the Q-table to a Map for easier access
                 // if unexisted key is accessed, return default value (list of 0)
                 const qMap = new Map(Object.entries(data));
+                console.log(`Q-table loaded: (${currentQTableFile}), size: ${qMap.size}`);
                 setQTable(qMap);
-                console.log('Q-table loaded: ${currentQTableFile}');
             } catch (error) {
                 console.error(error);
                 setQTable(new Map());
@@ -69,7 +70,6 @@ function Game() {
                 setIsLoading(false);
             }
         };
-
         loadQTable();
     }, [currentQTableFile]);
 
@@ -110,12 +110,13 @@ function Game() {
             return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : null;    
         }
 
-        const qTableConsistentMapping = {
-            player1Mark: 'O', player1Value: 1,
-            player2Mark: 'X', player2Value: -1
-        };
-
-        const stateKey = boardToQTableKey(currentBoard, qTableConsistentMapping);
+        // const qTableConsistentMapping = {
+        //     player1Mark: 'O', player1Value: 1,
+        //     player2Mark: 'X', player2Value: -1
+        // };
+        // use dynamic mapping
+        const markMapping = getMarkMapping();
+        const stateKey = boardToQTableKey(currentBoard, markMapping);
         const qValues = getQValues(stateKey);
         const availableMoves = getAvailableMoves(currentBoard);
 
