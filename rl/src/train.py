@@ -140,19 +140,19 @@ def train(num_episodes=10000, alpha=0.1, gamma=0.99, epsilon_start=1.0, epsilon_
 
 if __name__ == '__main__':
     # パラメータ設定
-    episodes = 500000      # 学習エピソード数
-    alpha_val = 0.1       # 学習率
-    gamma_val = 0.99      # 割引率
-    epsilon_s = 1.0       # 初期ε
-    epsilon_d = 0.9995   # ε減衰率 (10000エピソードで約0.006まで減衰, 20000でほぼ最小値)
-                          # epsilon_s * (epsilon_d ^ episodes)
-    epsilon_m = 0      # 最小ε
+    episodes = 1000000     # 学習エピソード数 (増加)
+    alpha_val = 0.05      # 学習率 (少し下げることを検討、まずは0.1のままでも可)
+    gamma_val = 0.99      # 割引率 (変更なし)
+    epsilon_s = 1.0       # 初期ε (変更なし)
+    epsilon_d = 0.9999    # ε減衰率 (緩やかに)
+    epsilon_m = 0.01      # 最小ε (少し上げる)
     
     # 学習回数とパラメータがわかるようなファイル名にする
     dirname = "q_tables"
     if not os.path.exists(dirname):
         os.makedirs(dirname)
-    q_table_file = os.path.join(dirname, f"q_table_ep{episodes}_a{alpha_val}_g{gamma_val}_epsdecay{epsilon_d}.json")
+    # ファイル名に新しいパラメータを反映
+    q_table_file = os.path.join(dirname, f"q_table_ep{episodes}_a{alpha_val}_g{gamma_val}_epsS{epsilon_s}_epsD{epsilon_d}_epsM{epsilon_m}.json")
 
     train(num_episodes=episodes, 
           alpha=alpha_val, 
