@@ -219,7 +219,7 @@ function Game() {
                 <ModelSelector
                     currentModelFile={currentQTableFile}
                     onChangeModel={handleModelChange}
-                    disabled={isLoading || (!isPlayerNext && !winner)}
+                    disabled={isLoading}
                 />
                 <h2> First or Second?</h2>
                 <button onClick={() => startGame(true)} disabled={isLoading}> First Player (X)</button>
