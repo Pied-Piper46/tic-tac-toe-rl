@@ -52,7 +52,7 @@ function Game() {
         const loadQTable = async () => {
             setIsLoading(true);
             try {
-                const response = await fetch(`/${currentQTableFile}`);
+                const response = await fetch(`${process.env.PUBLIC_URL}/${currentQTableFile}`);
                 if (!response.ok) {
                     throw new Error(`Failed to lead Q-table (${currentQTableFile}): ${response.statusText}`);
                 }
