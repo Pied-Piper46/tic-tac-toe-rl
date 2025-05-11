@@ -56,11 +56,8 @@ function Game() {
                     throw new Error(`Failed to lead Q-table (${currentQTableFile}): ${response.statusText}`);
                 }
                 const data = await response.json();
-                console.log('Q-table data:', data);
                 // Convert the Q-table to a Map for easier access
-                // if unexisted key is accessed, return default value (list of 0)
                 const qMap = new Map(Object.entries(data));
-                console.log(`Q-table loaded: (${currentQTableFile}), size: ${qMap.size}`);
                 setQTable(qMap);
             } catch (error) {
                 console.error(error);
@@ -75,8 +72,23 @@ function Game() {
 
     // Helper function to get Q values
     const getQValues = useCallback((stateKey) => {
-        if (qTable && qTable.has(stateKey)) {
-            return qTable.get(stateKey);
+        if (qTable) {
+            if (qTable.has(stateKey)) {
+                return qTable.get(stateKey);
+            } else {
+                console.warn(`[getQValues] Key NOT FOUND in qTable: "${stateKey}"`);
+                if (qTable.size > 0) {
+                    console.log("[getQValues] Sample of actual keys in qTable:");
+                    let count = 0;
+                    for (const key of qTable.keys()) {
+                        console.log(`  - Actual key: "${key}" (type: ${typeof key}, length: ${key.length})`);
+                        count++;
+                        if (count >= 5) break;
+                    }
+                } else {
+                    console.log("[getQValues] qTable is empty.");
+                }
+            }
         }
         return Array(9).fill(0); // Default Q values if stateKey not found
     }, [qTable]);
@@ -84,22 +96,16 @@ function Game() {
 
     // Dynamic mapping of player and AI marks
     const getMarkMapping = useCallback(() => {
-        // Since Player1 is always 1('O'), Player2 is always -1('X') in Q-table,
-        // we need to map them to the actual marks used in the game
-        if (aiMark === 'O') { // AI is 'O' (player 1 in Q-table)
-            return {
-                player1Mark: 'O', player1Value: 1,
-                player2Mark: 'X', player2Value: -1
-            };
-        } else { // AI is 'X' (player 2 in Q-table)
-                 // need to swap the marks since Q-table values are always viewed by player 1
-            return {
-                player1Mark: 'X', player1Value: 1,
-                player2Mark: 'O', player2Value: -1
-                // depending on the definition of Q-table
-            };
-        }  
-    }, [aiMark]);
+        // Q-table is trained exclusively with 'X' as player 1 (value 1) and 'O' as player 2 (value -1).
+        // Therefore, for q-table lookup, always map the board's 'X' to 1 and 'O' to -1,
+        // regardless of which mark the AI is currently playing.
+        return {
+            player1Mark: 'X', // The mark on the board that corresponds to '1' in Q-table keys
+            player1Value: 1,
+            player2Mark: 'O', // The mark on the board that corresponds to '-1' in Q-table keys
+            player2Value: -1
+        };
+    }, []);
 
     
     // AI logic
@@ -110,10 +116,6 @@ function Game() {
             return available.length > 0 ? available[Math.floor(Math.random() * available.length)] : null;    
         }
 
-        // const qTableConsistentMapping = {
-        //     player1Mark: 'O', player1Value: 1,
-        //     player2Mark: 'X', player2Value: -1
-        // };
         // use dynamic mapping
         const markMapping = getMarkMapping();
         const stateKey = boardToQTableKey(currentBoard, markMapping);
@@ -145,7 +147,7 @@ function Game() {
         console.log(`State: ${stateKey}, Q-values: [${qValues.map(v => v.toFixed(2)).join(', ')}], Available: [${availableMoves.join(', ')}], Chosen move: ${bestMove} (Q: ${maxQValue.toFixed(2)})`);
 
         return bestMove;
-    }, [qTable, getQValues]);
+    }, [qTable, getQValues, getMarkMapping]);
 
 
     const handleClick = (i) => {
