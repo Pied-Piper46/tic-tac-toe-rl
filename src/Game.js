@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Board from './Board';
 import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
+import './Game.css'; // Game.css をインポート
 
 // The first model which is defined in ModelSelector.js will be a default model
 // Ajust the model name if you change the order of models in ModelSelector.js
@@ -212,32 +213,43 @@ function Game() {
         status = `Next player: ${isPlayerNext ? `You (${playerMark})` : `AI (${aiMark})`}`;
     }
 
-    if (!gameStarted) {
-        return (
-            <div className="game-setup">
-                <h1> Tic Tac Toe (vs AI) </h1>
-                <ModelSelector
-                    currentModelFile={currentQTableFile}
-                    onChangeModel={handleModelChange}
-                    disabled={isLoading}
-                />
-                <h2> First or Second?</h2>
-                <button onClick={() => startGame(true)} disabled={isLoading}> First Player (X)</button>
-                <button onClick={() => startGame(false)} disabled={isLoading}> Second Player (O)</button>
-                {isLoading && <p>Loading Q-table...</p>}
-            </div>
-        );
-    }
-
     return (
-        <div className="game">
-            <h1> Tic Tac Toe (vs AI) </h1>
-            <Board squares={board} onClick={handleClick} />
-            <div className="game-info">
-                <div>{status}</div>
-                <button onClick={resetGameToSetup}>Restart Game</button>
+        <div className="game-container">
+        <header className="game-header">
+            <h1>TIC TAC TOE (vs AI)</h1>
+        </header>
+
+        {/* Set up display */}
+        {!gameStarted && (
+            <div className="game-setup">
+            <div className="model-selector-container">
+                <ModelSelector
+                currentModelFile={currentQTableFile}
+                onChangeModel={handleModelChange}
+                disabled={isLoading}
+                />
             </div>
-            {/* TODO: Add model selection UI */}
+            <h2>First or Second？</h2>
+            <div className="start-options">
+                <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
+                <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
+            </div>
+            {isLoading && <p className="loading-text">Loading...</p>}
+            </div>
+        )}
+
+        {/* Game display */}
+        {gameStarted && (
+            <main className="game-main">
+            <Board squares={board} onClick={handleClick} playerMark={playerMark} aiMark={aiMark} />
+            <div className="game-status-panel">
+                <p className="status-message">{status}</p>
+                <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
+                Back to Setup
+                </button>
+            </div>
+            </main>
+        )}
         </div>
     );
 }
