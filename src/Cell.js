@@ -18,7 +18,7 @@ function Cell({ value, onClick }) {
             onClick={onClick}
             disabled={!!value} // Disable the button if it's already occupied
         >
-            {value}
+            {value && <span className="mark-symbol">{value}</span>}
         </button>
     );
 }
