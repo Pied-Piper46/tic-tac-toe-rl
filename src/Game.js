@@ -5,6 +5,7 @@ import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } fr
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import './Game.css';
 import WinnerModal from './WinnerModal';
+import Confetti from 'react-confetti';
 
 // The first model which is defined in ModelSelector.js will be a default model
 // Ajust the model name if you change the order of models in ModelSelector.js
@@ -22,6 +23,7 @@ function Game() {
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
     const [isPageLoaded, setIsPageLoaded] = useState(false);
     const statusRef = useRef(null);
+    const [showConfetti, setShowConfetti] = useState(false);
 
 
     useEffect(() => {
@@ -212,6 +214,21 @@ function Game() {
     }, [isPlayerNext, board, gameResult.winner, aiMark, getAIMove, isLoading, gameStarted]);
 
 
+    // Show confetti if there's a winner
+    useEffect(() => {
+        if (gameResult.winner && gameResult.winner !== 'draw') {
+            if (gameResult.winner === playerMark) {
+                setShowConfetti(true);
+                const timer = setTimeout(() => setShowConfetti(false), 10000);
+                return () => clearTimeout(timer);
+            } else {
+                setShowConfetti(false); // Hide confetti if AI wins
+            }
+        } else {
+            setShowConfetti(false); // Hide confetti if there's no winner
+        }
+    }, [gameResult, playerMark]);
+
     let status;
     if (isLoading && !gameStarted) {
         status = 'Select a model and First/Second to start the game';
@@ -291,6 +308,9 @@ function Game() {
                     onRestart={resetGameToSetup}
                 />
             )} */}
+
+            {/* Confetti effect */}
+            {showConfetti && <Confetti />}
         </div>
     );
 }
