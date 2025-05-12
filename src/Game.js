@@ -19,7 +19,14 @@ function Game() {
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
+    const [isPageLoaded, setIsPageLoaded] = useState(false);
     const statusRef = useRef(null);
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsPageLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
 
     const startGame = (playerIsFirst) => {
@@ -195,7 +202,7 @@ function Game() {
                     console.error('AI move is null, but there are still available moves. This should not happen.');
                     setIsPlayerNext(true);
                 }
-            }, 1000);
+            }, 800);
         }
     }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
 
@@ -216,7 +223,7 @@ function Game() {
     }
 
     return (
-        <div className="game-container">
+        <div className={`game-container ${isPageLoaded ? 'loaded' : ''}`}>
         <header className="game-header">
             <h1>TIC TAC TOE (vs AI)</h1>
         </header>
