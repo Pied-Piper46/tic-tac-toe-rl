@@ -4,6 +4,7 @@ import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import './Game.css';
+import WinnerModal from './WinnerModal';
 
 // The first model which is defined in ModelSelector.js will be a default model
 // Ajust the model name if you change the order of models in ModelSelector.js
@@ -229,58 +230,67 @@ function Game() {
 
     return (
         <div className={`game-container ${isPageLoaded ? 'loaded' : ''}`}>
-        <header className="game-header">
-            <h1>TIC TAC TOE (vs AI)</h1>
-        </header>
+            <header className="game-header">
+                <h1>TIC TAC TOE (vs AI)</h1>
+            </header>
 
-        {/* Set up display */}
-        {!gameStarted && (
-            <div className="game-setup">
-            <div className="model-selector-container">
-                <ModelSelector
-                currentModelFile={currentQTableFile}
-                onChangeModel={handleModelChange}
-                disabled={isLoading}
+            {/* Set up display */}
+            {!gameStarted && (
+                <div className="game-setup">
+                <div className="model-selector-container">
+                    <ModelSelector
+                    currentModelFile={currentQTableFile}
+                    onChangeModel={handleModelChange}
+                    disabled={isLoading}
+                    />
+                </div>
+                <h2>First or Second？</h2>
+                <div className="start-options">
+                    <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
+                    <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
+                </div>
+                {isLoading && <p className="loading-text">Loading...</p>}
+                </div>
+            )}
+
+            {/* Game display */}
+            {gameStarted && (
+                <main className={`game-main ${gameResult.winner && gameResult.winner !== 'draw' ? 'game-over' : ''}`}>
+                {/* Pass winningLine to Board */}
+                <Board
+                    squares={board}
+                    onClick={handleClick}
+                    playerMark={playerMark}
+                    aiMark={aiMark}
+                    winningLine={gameResult.line}
+                    winningLineIndex={gameResult.lineIndex}
                 />
-            </div>
-            <h2>First or Second？</h2>
-            <div className="start-options">
-                <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
-                <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
-            </div>
-            {isLoading && <p className="loading-text">Loading...</p>}
-            </div>
-        )}
+                <div className="status-message-wrapper">
+                    <SwitchTransition mode="out-in">
+                        <CSSTransition
+                        key={status}
+                        nodeRef={statusRef}
+                        timeout={300} // アニメーション時間をミリ秒で指定
+                        classNames="fade"
+                        >
+                            <p className="status-message" ref={statusRef}>{status}</p>
+                        </CSSTransition>
+                    </SwitchTransition>
+                </div>
+                <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
+                    Back to Setup
+                </button>
+                </main>
+            )}
 
-        {/* Game display */}
-        {gameStarted && (
-            <main className={`game-main ${gameResult.winner ? 'game-over' : ''}`}>
-            {/* Pass winningLine to Board */}
-            <Board
-                squares={board}
-                onClick={handleClick}
-                playerMark={playerMark}
-                aiMark={aiMark}
-                winningLine={gameResult.line}
-                winningLineIndex={gameResult.lineIndex}
-            />
-            <div className="status-message-wrapper">
-                <SwitchTransition mode="out-in">
-                    <CSSTransition
-                    key={status}
-                    nodeRef={statusRef}
-                    timeout={300} // アニメーション時間をミリ秒で指定
-                    classNames="fade"
-                    >
-                        <p className="status-message" ref={statusRef}>{status}</p>
-                    </CSSTransition>
-                </SwitchTransition>
-            </div>
-            <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
-                Back to Setup
-            </button>
-            </main>
-        )}
+            {/* Modal for winner */}
+            {/* {gameResult.winner && gameResult.winner !== 'draw' && (
+                <WinnerModal
+                    winner={gameResult.winner}
+                    playerMark={playerMark}
+                    onRestart={resetGameToSetup}
+                />
+            )} */}
         </div>
     );
 }
