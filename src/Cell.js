@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Cell({ value, onClick }) {
+function Cell({ value, onClick, isWinningCell }) {
     
     let cellClass = "cell";
     if (value === 'X') {
@@ -12,13 +12,17 @@ function Cell({ value, onClick }) {
         cellClass += " occupied";
     }
 
+    if (isWinningCell) {
+        cellClass += " winning-cell";
+    }
+
     return (
         <button 
             className={cellClass}
             onClick={onClick}
             disabled={!!value} // Disable the button if it's already occupied
         >
-            {value}
+            {value && <span className="mark-symbol">{value}</span>}
         </button>
     );
 }

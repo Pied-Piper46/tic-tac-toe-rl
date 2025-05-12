@@ -11,15 +11,15 @@ export const calculateWinner = (squares) => {
     for (let i = 0; i < lines.length; i++) {
         const [a, b, c] = lines[i];
         if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
+            return { winner: squares[a], line: lines[i], lineIndex: i };
         }
     }
     // draw
     if (squares.every(square => square !== null)) {
-        return 'draw';
+        return { winner: 'draw', line: null, lineIndex: null };
     }
     // game is still ongoing
-    return null;
+    return { winner: null, line: null, lineIndex: null };
 };
 
 // helper function to convert board state to key string for q table

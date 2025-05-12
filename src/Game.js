@@ -1,8 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './Board';
 import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
-import './Game.css'; // Game.css をインポート
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import './Game.css';
+import WinnerModal from './WinnerModal';
+import Confetti from 'react-confetti';
 
 // The first model which is defined in ModelSelector.js will be a default model
 // Ajust the model name if you change the order of models in ModelSelector.js
@@ -11,18 +14,27 @@ const initialModelFile = 'q_table_easy.json';
 function Game() {
     const [board, setBoard] = useState(initialBoard());
     const [isPlayerNext, setIsPlayerNext] = useState(true); // true if it's player's turn
-    const [winner, setWinner] = useState(null);
+    const [gameResult, setGameResult] = useState({ winner: null, line: null, lineIndex: null }); // Changed from winner
     const [qTable, setQTable] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentQTableFile, setCurrentQTableFile] = useState(initialModelFile);
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
+    const [isPageLoaded, setIsPageLoaded] = useState(false);
+    const statusRef = useRef(null);
+    const [showConfetti, setShowConfetti] = useState(false);
+
+
+    useEffect(() => {
+        const timer = setTimeout(() => setIsPageLoaded(true), 100);
+        return () => clearTimeout(timer);
+    }, []);
 
 
     const startGame = (playerIsFirst) => {
         setBoard(initialBoard());
-        setWinner(null);
+        setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
         if (playerIsFirst) {
             setPlayerMark('X');
             setAiMark('O');
@@ -38,7 +50,7 @@ function Game() {
     const resetGameToSetup = () => {
         setGameStarted(false);
         setBoard(initialBoard());
-        setWinner(null);
+        setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
     };
 
     const handleModelChange = (newModelFile) => {
@@ -152,7 +164,8 @@ function Game() {
 
 
     const handleClick = (i) => {
-        if (isLoading || winner || board[i] || !isPlayerNext || !gameStarted) { // Ignore click if game is over or cell is already filled
+        // Use gameResult.winner to check if game is over
+        if (isLoading || gameResult.winner || board[i] || !isPlayerNext || !gameStarted) {
             return;
         }
 
@@ -160,18 +173,18 @@ function Game() {
         newBoard[i] = playerMark;
         setBoard(newBoard);
 
-        const gameWinner = calculateWinner(newBoard);
-        if (gameWinner) {
-            setWinner(gameWinner);
+        const result = calculateWinner(newBoard); // calculateWinner now returns an object
+        if (result.winner) { // Check if there is a winner or a draw
+            setGameResult(result); // Set the entire result object
         } else {
             setIsPlayerNext(false); // Switch to AI's turn
         }
     };
 
-    // AI turn (implement details later)
+    // AI turn
     useEffect(() => {
-        if (!isPlayerNext && !winner && !isLoading && gameStarted) {
-            // Call AI logic
+        // Use gameResult.winner to check if game is over
+        if (!isPlayerNext && !gameResult.winner && !isLoading && gameStarted) {
             const aiMove = getAIMove(board);
 
             // Pretend AI thinks for a moment
@@ -181,75 +194,123 @@ function Game() {
                     newBoard[aiMove] = aiMark;
                     setBoard(newBoard);
 
-                    const gameWinner = calculateWinner(newBoard);
-                    if (gameWinner) {
-                        setWinner(gameWinner);
+                    const result = calculateWinner(newBoard); // calculateWinner returns an object
+                    if (result.winner) { // Check if there is a winner or a draw
+                        setGameResult(result); // Set the entire result object
                     } else {
-                        setIsPlayerNext(true);
+                        setIsPlayerNext(true); // No winner/draw, switch turn
                     }
-                } else if (calculateWinner(board) === 'draw' && !winner) {
-                    setWinner('draw');
+                // Removed redundant draw check here, as calculateWinner handles it.
                 } else if (aiMove === null && getAvailableMoves(board).length > 0) {
                     console.error('AI move is null, but there are still available moves. This should not happen.');
                     setIsPlayerNext(true);
+                } else if (aiMove === null && getAvailableMoves(board).length === 0 && !gameResult.winner) {
+                    // Safeguard: If AI has no move and board is full, explicitly set draw
+                    setGameResult(calculateWinner(board));
                 }
-            }, 500);
+            }, 800);
         }
-    }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
+        // Add gameResult.winner to dependency array
+    }, [isPlayerNext, board, gameResult.winner, aiMark, getAIMove, isLoading, gameStarted]);
 
+
+    // Show confetti if there's a winner
+    useEffect(() => {
+        if (gameResult.winner && gameResult.winner !== 'draw') {
+            if (gameResult.winner === playerMark) {
+                setShowConfetti(true);
+                const timer = setTimeout(() => setShowConfetti(false), 10000);
+                return () => clearTimeout(timer);
+            } else {
+                setShowConfetti(false); // Hide confetti if AI wins
+            }
+        } else {
+            setShowConfetti(false); // Hide confetti if there's no winner
+        }
+    }, [gameResult, playerMark]);
 
     let status;
     if (isLoading && !gameStarted) {
         status = 'Select a model and First/Second to start the game';
     } else if (isLoading) {
         status = 'Loading Q-table...';
-    } else if (winner) {
-        if (winner === 'draw') {
+    } else if (gameResult.winner) { // Check gameResult.winner
+        if (gameResult.winner === 'draw') {
             status = 'Draw!';
         } else {
-            status = `Winner: ${winner === playerMark ? 'You' : 'AI'} (${winner})`;
+            // Use gameResult.winner for status message
+            status = `Winner: ${gameResult.winner === playerMark ? 'You' : 'AI'} (${gameResult.winner})`;
         }
     } else if (gameStarted) {
         status = `Next player: ${isPlayerNext ? `You (${playerMark})` : `AI (${aiMark})`}`;
     }
 
     return (
-        <div className="game-container">
-        <header className="game-header">
-            <h1>TIC TAC TOE (vs AI)</h1>
-        </header>
+        <div className={`game-container ${isPageLoaded ? 'loaded' : ''}`}>
+            <header className="game-header">
+                <h1>TIC TAC TOE (vs AI)</h1>
+            </header>
 
-        {/* Set up display */}
-        {!gameStarted && (
-            <div className="game-setup">
-            <div className="model-selector-container">
-                <ModelSelector
-                currentModelFile={currentQTableFile}
-                onChangeModel={handleModelChange}
-                disabled={isLoading}
+            {/* Set up display */}
+            {!gameStarted && (
+                <div className="game-setup">
+                <div className="model-selector-container">
+                    <ModelSelector
+                    currentModelFile={currentQTableFile}
+                    onChangeModel={handleModelChange}
+                    disabled={isLoading}
+                    />
+                </div>
+                <h2>First or Second？</h2>
+                <div className="start-options">
+                    <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
+                    <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
+                </div>
+                {isLoading && <p className="loading-text">Loading...</p>}
+                </div>
+            )}
+
+            {/* Game display */}
+            {gameStarted && (
+                <main className={`game-main ${gameResult.winner && gameResult.winner !== 'draw' ? 'game-over' : ''}`}>
+                {/* Pass winningLine to Board */}
+                <Board
+                    squares={board}
+                    onClick={handleClick}
+                    playerMark={playerMark}
+                    aiMark={aiMark}
+                    winningLine={gameResult.line}
+                    winningLineIndex={gameResult.lineIndex}
                 />
-            </div>
-            <h2>First or Second？</h2>
-            <div className="start-options">
-                <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
-                <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
-            </div>
-            {isLoading && <p className="loading-text">Loading...</p>}
-            </div>
-        )}
-
-        {/* Game display */}
-        {gameStarted && (
-            <main className="game-main">
-            <Board squares={board} onClick={handleClick} playerMark={playerMark} aiMark={aiMark} />
-            <div className="game-status-panel">
-                <p className="status-message">{status}</p>
+                <div className="status-message-wrapper">
+                    <SwitchTransition mode="out-in">
+                        <CSSTransition
+                        key={status}
+                        nodeRef={statusRef}
+                        timeout={300} // アニメーション時間をミリ秒で指定
+                        classNames="fade"
+                        >
+                            <p className="status-message" ref={statusRef}>{status}</p>
+                        </CSSTransition>
+                    </SwitchTransition>
+                </div>
                 <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
-                Back to Setup
+                    Back to Setup
                 </button>
-            </div>
-            </main>
-        )}
+                </main>
+            )}
+
+            {/* Modal for winner */}
+            {/* {gameResult.winner && gameResult.winner !== 'draw' && (
+                <WinnerModal
+                    winner={gameResult.winner}
+                    playerMark={playerMark}
+                    onRestart={resetGameToSetup}
+                />
+            )} */}
+
+            {/* Confetti effect */}
+            {showConfetti && <Confetti />}
         </div>
     );
 }

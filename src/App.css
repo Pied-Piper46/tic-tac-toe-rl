@@ -88,6 +88,11 @@
   box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
 }
 
+.game-setup button:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
 .game-setup button:disabled {
   background-color: #ccc;
   color: #666;
@@ -143,4 +148,46 @@
   .game-setup .start-options button {
     width: 80%;
   }
+}
+
+
+@keyframes fadeInScaleUp {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mark-symbol {
+  display: inline-block;
+  animation: fadeInScaleUp 0.3s ease-out forwards;
+}
+
+.game-container.loaded .game-main > *{
+  animation: fadeInUp 0.5s ease-out backwards;
+}
+
+.game-container.loaded .game-header {
+  animation-delay: 0.1s;
+}
+.game-container.loaded .model-selector-container {
+  animation-delay: 0.2s;
+}
+.game-container.loaded .game-setup h2 {
+  animation-delay: 0.3s;
 }

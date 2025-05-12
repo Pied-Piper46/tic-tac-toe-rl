@@ -1,7 +1,7 @@
 import React from 'react';
 import Cell from './Cell';
 
-function Board({ squares, onClick }) {
+function Board({ squares, onClick, winningLine, winningLineIndex }) {
 
     return (
         <div className="board">
@@ -10,8 +10,12 @@ function Board({ squares, onClick }) {
                     key={i}
                     value={squares}
                     onClick={() => onClick(i)}
+                    isWinningCell={winningLine && winningLine.includes(i)}
                 />
             ))}
+            {winningLine && (
+                <div className={`winning-line line-${winningLineIndex}`}></div>
+            )}
         </div>
     );
 }
