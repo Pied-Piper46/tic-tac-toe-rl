@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Cell({ value, onClick }) {
+function Cell({ value, onClick, isWinningCell }) {
     
     let cellClass = "cell";
     if (value === 'X') {
@@ -10,6 +10,10 @@ function Cell({ value, onClick }) {
     }
     if (value) {
         cellClass += " occupied";
+    }
+
+    if (isWinningCell) {
+        cellClass += " winning-cell";
     }
 
     return (

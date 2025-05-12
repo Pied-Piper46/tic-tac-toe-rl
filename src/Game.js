@@ -12,7 +12,7 @@ const initialModelFile = 'q_table_easy.json';
 function Game() {
     const [board, setBoard] = useState(initialBoard());
     const [isPlayerNext, setIsPlayerNext] = useState(true); // true if it's player's turn
-    const [winner, setWinner] = useState(null);
+    const [gameResult, setGameResult] = useState({ winner: null, line: null, lineIndex: null }); // Changed from winner
     const [qTable, setQTable] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [currentQTableFile, setCurrentQTableFile] = useState(initialModelFile);
@@ -31,7 +31,7 @@ function Game() {
 
     const startGame = (playerIsFirst) => {
         setBoard(initialBoard());
-        setWinner(null);
+        setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
         if (playerIsFirst) {
             setPlayerMark('X');
             setAiMark('O');
@@ -47,7 +47,7 @@ function Game() {
     const resetGameToSetup = () => {
         setGameStarted(false);
         setBoard(initialBoard());
-        setWinner(null);
+        setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
     };
 
     const handleModelChange = (newModelFile) => {
@@ -161,7 +161,8 @@ function Game() {
 
 
     const handleClick = (i) => {
-        if (isLoading || winner || board[i] || !isPlayerNext || !gameStarted) { // Ignore click if game is over or cell is already filled
+        // Use gameResult.winner to check if game is over
+        if (isLoading || gameResult.winner || board[i] || !isPlayerNext || !gameStarted) {
             return;
         }
 
@@ -169,18 +170,18 @@ function Game() {
         newBoard[i] = playerMark;
         setBoard(newBoard);
 
-        const gameWinner = calculateWinner(newBoard);
-        if (gameWinner) {
-            setWinner(gameWinner);
+        const result = calculateWinner(newBoard); // calculateWinner now returns an object
+        if (result.winner) { // Check if there is a winner or a draw
+            setGameResult(result); // Set the entire result object
         } else {
             setIsPlayerNext(false); // Switch to AI's turn
         }
     };
 
-    // AI turn (implement details later)
+    // AI turn
     useEffect(() => {
-        if (!isPlayerNext && !winner && !isLoading && gameStarted) {
-            // Call AI logic
+        // Use gameResult.winner to check if game is over
+        if (!isPlayerNext && !gameResult.winner && !isLoading && gameStarted) {
             const aiMove = getAIMove(board);
 
             // Pretend AI thinks for a moment
@@ -190,21 +191,24 @@ function Game() {
                     newBoard[aiMove] = aiMark;
                     setBoard(newBoard);
 
-                    const gameWinner = calculateWinner(newBoard);
-                    if (gameWinner) {
-                        setWinner(gameWinner);
+                    const result = calculateWinner(newBoard); // calculateWinner returns an object
+                    if (result.winner) { // Check if there is a winner or a draw
+                        setGameResult(result); // Set the entire result object
                     } else {
-                        setIsPlayerNext(true);
+                        setIsPlayerNext(true); // No winner/draw, switch turn
                     }
-                } else if (calculateWinner(board) === 'draw' && !winner) {
-                    setWinner('draw');
+                // Removed redundant draw check here, as calculateWinner handles it.
                 } else if (aiMove === null && getAvailableMoves(board).length > 0) {
                     console.error('AI move is null, but there are still available moves. This should not happen.');
                     setIsPlayerNext(true);
+                } else if (aiMove === null && getAvailableMoves(board).length === 0 && !gameResult.winner) {
+                    // Safeguard: If AI has no move and board is full, explicitly set draw
+                    setGameResult(calculateWinner(board));
                 }
             }, 800);
         }
-    }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
+        // Add gameResult.winner to dependency array
+    }, [isPlayerNext, board, gameResult.winner, aiMark, getAIMove, isLoading, gameStarted]);
 
 
     let status;
@@ -212,11 +216,12 @@ function Game() {
         status = 'Select a model and First/Second to start the game';
     } else if (isLoading) {
         status = 'Loading Q-table...';
-    } else if (winner) {
-        if (winner === 'draw') {
+    } else if (gameResult.winner) { // Check gameResult.winner
+        if (gameResult.winner === 'draw') {
             status = 'Draw!';
         } else {
-            status = `Winner: ${winner === playerMark ? 'You' : 'AI'} (${winner})`;
+            // Use gameResult.winner for status message
+            status = `Winner: ${gameResult.winner === playerMark ? 'You' : 'AI'} (${gameResult.winner})`;
         }
     } else if (gameStarted) {
         status = `Next player: ${isPlayerNext ? `You (${playerMark})` : `AI (${aiMark})`}`;
@@ -250,7 +255,15 @@ function Game() {
         {/* Game display */}
         {gameStarted && (
             <main className="game-main">
-            <Board squares={board} onClick={handleClick} playerMark={playerMark} aiMark={aiMark} />
+            {/* Pass winningLine to Board */}
+            <Board
+                squares={board}
+                onClick={handleClick}
+                playerMark={playerMark}
+                aiMark={aiMark}
+                winningLine={gameResult.line}
+                winningLineIndex={gameResult.lineIndex}
+            />
             <div className="status-message-wrapper">
                 <SwitchTransition mode="out-in">
                     <CSSTransition
