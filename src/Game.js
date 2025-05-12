@@ -254,7 +254,7 @@ function Game() {
 
         {/* Game display */}
         {gameStarted && (
-            <main className="game-main">
+            <main className={`game-main ${gameResult.winner ? 'game-over' : ''}`}>
             {/* Pass winningLine to Board */}
             <Board
                 squares={board}

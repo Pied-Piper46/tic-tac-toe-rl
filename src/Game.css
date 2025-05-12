@@ -259,7 +259,27 @@
   transform: translateX(-50%) rotate(var(--angle)) scaleX(0); /* Initial state */
 }
 
+
+/* --- Winning Cell Animation --- */
+@keyframes pulseWin {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  }
+  50% {
+    transform: scale(1.15);
+    box-shadow: 0 5px 15px var(--accent-color);
+  }
+}
 .cell.winning-cell {
+  animation: pulseWin 0.8s ease-in-out infinite;
+  animation-iteration-count: 5;
+  border: 2px solid var(--accent-color);
   background-color: #fff9c4;
   transform: scale(1,1);
+}
+
+.game-main.game-over .cell:not(.winning-cell) {
+  opacity: 0.6;
+  transition: opacity 0.3s ease-in-out;
 }
