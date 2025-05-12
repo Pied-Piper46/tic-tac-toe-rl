@@ -51,6 +51,9 @@
   
   .cell:hover:not([disabled]):not(.occupied) {
     background-color: var(--cell-hover-bg-color);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.2s ease-in-out, transform 0.2s ease-out, box-shadow 0.2s ease-out;
   }
   .cell:active:not([disabled]):not(.occupied) {
     transform: scale(0.95);
