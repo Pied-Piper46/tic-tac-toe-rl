@@ -70,9 +70,28 @@
   .cell[disabled] {
     cursor: not-allowed;
   }
+
+  .fade-enter {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  .fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 300ms ease-out, transform 300ms ease-out;
+  }
+  .fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .fade-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 300ms ease-in, transform 300ms ease-in;
+  }
   
   
-  .game-status-panel {
+  .game-status-panel { /* no longer used */
     margin-top: 20px;
     display: flex;
     flex-direction: column;
@@ -80,7 +99,7 @@
     gap: 15px;
   }
   
-  .status-message {
+  .status-message { /* no longer used */
     font-size: 1.3em;
     font-weight: 600;
     min-height: 1.5em;

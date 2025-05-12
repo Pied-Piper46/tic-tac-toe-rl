@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './Board';
 import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
-import './Game.css'; // Game.css をインポート
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
+import './Game.css';
 
 // The first model which is defined in ModelSelector.js will be a default model
 // Ajust the model name if you change the order of models in ModelSelector.js
@@ -18,6 +19,7 @@ function Game() {
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
+    const statusRef = useRef(null);
 
 
     const startGame = (playerIsFirst) => {
@@ -242,12 +244,21 @@ function Game() {
         {gameStarted && (
             <main className="game-main">
             <Board squares={board} onClick={handleClick} playerMark={playerMark} aiMark={aiMark} />
-            <div className="game-status-panel">
-                <p className="status-message">{status}</p>
-                <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
-                Back to Setup
-                </button>
+            <div className="status-message-wrapper">
+                <SwitchTransition mode="out-in">
+                    <CSSTransition
+                    key={status}
+                    nodeRef={statusRef}
+                    timeout={300} // アニメーション時間をミリ秒で指定
+                    classNames="fade"
+                    >
+                        <p className="status-message" ref={statusRef}>{status}</p>
+                    </CSSTransition>
+                </SwitchTransition>
             </div>
+            <button className="reset-button" onClick={resetGameToSetup} disabled={isLoading}>
+                Back to Setup
+            </button>
             </main>
         )}
         </div>
