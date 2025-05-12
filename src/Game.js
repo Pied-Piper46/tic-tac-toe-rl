@@ -195,7 +195,7 @@ function Game() {
                     console.error('AI move is null, but there are still available moves. This should not happen.');
                     setIsPlayerNext(true);
                 }
-            }, 500);
+            }, 1000);
         }
     }, [isPlayerNext, board, winner, aiMark, getAIMove, isLoading, gameStarted]);
 
