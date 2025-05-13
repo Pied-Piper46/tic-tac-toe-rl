@@ -64,8 +64,8 @@
 }
 
 .option-card {
-  background-color: #fff;
-  border: 2px solid var(--border-color);
+  background-image: linear-gradient(135deg, rgba(106, 17, 203, 0.9), rgba(37, 117, 252, 0.9));
+  border: 2px solid rgba(266, 255, 255, 0.4);
   border-radius: 12px;
   padding: 20px 15px;
   cursor: pointer;
@@ -73,7 +73,7 @@
   text-align: center;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05)
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15)
 }
 .option-card::before {
   content: "";
@@ -87,17 +87,18 @@
 }
 .option-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-  border-color: var(--secondary-color);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  border-color: rgba(255, 255, 255, 0.7);
+  background-image: linear-gradient(135deg, rgba(106, 17, 203, 0.85), rgba(37, 117, 252, 0.85));
 }
 .option-card:hover::before {
   left: 100%;
 }
 
 .option-card.selected {
-  border-color: var(--primary-color);
-  background-color: #f0e9ff;
-  box-shadow: 0 6px 15px rgba(106, 17, 203, 0.3);
+  border-color: #fff;
+  background-image: linear-gradient(135deg, rgba(106, 17, 203, 0.9), rgba(37, 117, 252, 0.9));
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
 }
 .option-card.selected::after {
   content: "";
@@ -122,12 +123,17 @@
   min-height: 2.5em;
 }
 
+.option-card .card-title,
+.option-card .card-description {
+  color: var(--text-light-color, #f8f9fa);
+}
+
 .checkmark {
   position: absolute;
   top: 8px;
   right: 10px;
   font-size: 1.2em;
-  color: var(--primary-color);
+  color: var(--accent-color);
   animation: fadeInScaleUp 0.3s ease-out;
 }
 
