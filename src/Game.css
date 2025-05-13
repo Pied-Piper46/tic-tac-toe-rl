@@ -6,10 +6,6 @@
   height: 100%;
 }
 
-.game-header {
-  margin-bottom: 20px;
-}
-
 .game-main {
   display: flex;
   flex-direction: column;
