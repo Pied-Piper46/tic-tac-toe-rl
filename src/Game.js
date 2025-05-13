@@ -11,6 +11,12 @@ import Confetti from 'react-confetti';
 // Ajust the model name if you change the order of models in ModelSelector.js
 const initialModelFile = 'q_table_easy.json';
 
+const models = [
+    { file: 'q_table_easy.json', name: 'Easy Model', description: '★☆☆' },
+    { file: 'q_table_normal.json', name: 'Normal Model', description: '★★☆' },
+    { file: 'q_table_advanced.json', name: 'Advanced Model', description: '★★★' },
+];
+
 function Game() {
     const [board, setBoard] = useState(initialBoard());
     const [isPlayerNext, setIsPlayerNext] = useState(true); // true if it's player's turn
@@ -24,6 +30,7 @@ function Game() {
     const [isPageLoaded, setIsPageLoaded] = useState(false);
     const statusRef = useRef(null);
     const [showConfetti, setShowConfetti] = useState(false);
+    const [playerChoice, setPlayerChoice] = useState(null);
 
 
     useEffect(() => {
@@ -49,13 +56,42 @@ function Game() {
 
     const resetGameToSetup = () => {
         setGameStarted(false);
+        setPlayerChoice(null);
         setBoard(initialBoard());
         setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
+        setShowConfetti(false);
     };
 
     const handleModelChange = (newModelFile) => {
         setCurrentQTableFile(newModelFile);
         resetGameToSetup();
+    };
+
+    const handleModelSelect = (modelFile) => {
+        setCurrentQTableFile(modelFile);
+    };
+
+    const handlePlayerChoiceSelect = (choice) => {
+        setPlayerChoice(choice);
+    };
+
+    const handleStartGame = () => {
+        if (!currentQTableFile || !playerChoice) return;
+
+        setBoard(initialBoard());
+        setGameResult({ winner: null, line: null, lineIndex: null });
+        setShowConfetti(false);
+
+        if (playerChoice === 'first') {
+            setPlayerMark('X');
+            setAiMark('O');
+            setIsPlayerNext(true);
+        } else {
+            setPlayerMark('O');
+            setAiMark('X');
+            setIsPlayerNext(false);
+        }
+        setGameStarted(true);
     };
 
 
@@ -254,7 +290,62 @@ function Game() {
             {/* Set up display */}
             {!gameStarted && (
                 <div className="game-setup">
-                <div className="model-selector-container">
+                    {/* model select section*/}
+                    <div className="setup-selection model-selection">
+                        <h2>1. Select a Model</h2>
+                        <div className="options-grid model-options">
+                            {models.map(model => (
+                                <button
+                                    key={model.file}
+                                    className={`option-card model-option-card ${currentQTableFile === model.file ? 'selected' : ''}`}
+                                    onClick={() => handleModelSelect(model.file)}
+                                    disabled={isLoading}
+                                >
+                                    <span className="card-title">{model.name}</span>
+                                    {model.description && <span className="card-description">{model.description}</span>}
+                                    {currentQTableFile === model.file && <span className="checkmark">✔︎</span>}
+                                </button>
+                            ))}
+                        </div>
+                        {isLoading && <p className="loading-text subtle">Loading...</p>}
+                    </div>
+                    {/* player select section*/}
+                    <div className="setup-selection player-selection">
+                        <h2>2. Select First or Second</h2>
+                        <div className="options-grid player-options">
+                            <button
+                                className={`option-card player-option-card ${playerChoice === 'first' ? 'selected' : ''}`}
+                                onClick={() => handlePlayerChoiceSelect('first')}
+                                disabled={isLoading}
+                            >
+                                <span className="mark-icon player-x">X</span>
+                                <span className="card-title">First Player</span>
+                                {playerChoice === 'first' && <span className="checkmark">✔︎</span>}
+                            </button>
+                            <button
+                                className={`option-card player-option-card ${playerChoice === 'second' ? 'selected' : ''}`}
+                                onClick={() => handlePlayerChoiceSelect('second')}
+                                disabled={isLoading}
+                            >
+                                <span className="mark-icon player-o">O</span>
+                                <span className="card-title">Second Player</span>
+                                {playerChoice === 'second' && <span className="checkmark">✔︎</span>}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Start game button */}
+                    <div className="setup-section start-game">
+                        <button
+                            className="start-button"
+                            onClick={handleStartGame}
+                            disabled={isLoading || !currentQTableFile || !playerChoice}
+                        >
+                            Start Game
+                        </button>
+                    </div>
+
+                {/* <div className="model-selector-container">
                     <ModelSelector
                     currentModelFile={currentQTableFile}
                     onChangeModel={handleModelChange}
@@ -267,6 +358,8 @@ function Game() {
                     <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
                 </div>
                 {isLoading && <p className="loading-text">Loading...</p>}
+                </div> */}
+
                 </div>
             )}
 
