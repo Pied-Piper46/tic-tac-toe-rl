@@ -58,14 +58,46 @@
 }
 
 .options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.options-grid.model-options {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  width: 100%;
+  justify-content: flex-start;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary-color) var(--background-color);
+}
+.options-grid.model-options::-webkit-scrollbar {
+  height: 8px;
+}
+.options-grid.model-options::-webkit-scrollbar-track {
+  background: var(--background-color, #f4f7f9);
+  border-radius: 4px;
+}
+.options-grid.model-options::-webkit-scrollbar-thumb {
+  background-color: var(--secondary-color);
+  border-radius: 4px;
+}
+.options-grid.model-options::-webkit-scrollbar-thumb:hover {
+  background-color: var(--primary-color);
+}
+
+.options-grid.player-options {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 15px;
 }
 
 .option-card {
   background-image: linear-gradient(135deg, rgba(106, 17, 203, 0.9), rgba(37, 117, 252, 0.9));
-  border: 2px solid rgba(266, 255, 255, 0.4);
+  border: 2px solid rgba(255, 255, 255, 0.4); /* Typo fixed */
   border-radius: 12px;
   padding: 20px 15px;
   cursor: pointer;
@@ -128,6 +160,7 @@
   color: var(--text-light-color, #f8f9fa);
 }
 
+
 .checkmark {
   position: absolute;
   top: 8px;
@@ -137,13 +170,31 @@
   animation: fadeInScaleUp 0.3s ease-out;
 }
 
-.player-option-card {
-  padding: 15px;
+.model-option-card {
+  flex: 0 0 auto;
+  width: 180px;
+  min-height: 140px;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+}
+.model-option-card .card-title {
+  margin-top: 15px;
+  margin-bottom: auto;
+}
+.model-option-card .card-description {
+  margin-top: 10px;
+}
+
+
+.player-option-card {
+  padding: 15px;
+  display: grid;
+  /* flex-direction: column; removed as display is grid */
   align-items: center;
   gap: 8px;
   min-height: 130px;
+  flex: 1; /* Added to make cards share space equally */
 }
 .player-option-card .mark-icon {
   font-size: 2.8em;
@@ -171,7 +222,7 @@
 
 /* Explicitly style the enabled state */
 .start-button:not(:disabled) {
-  color: white; /* 白色に変更 */
+  color: white;
   background-image: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
 }
 
