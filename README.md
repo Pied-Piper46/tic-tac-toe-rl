@@ -1,70 +1,98 @@
-# Getting Started with Create React App
+# Tic Tac Toe vs AI
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Tic Tac Toe Game](./images/gameplay_screen.webp)
 
-## Available Scripts
+A modern, interactive Tic Tac Toe game where you can challenge an AI opponent trained through reinforcement learning. Test your skills against different difficulty levels and see if you can outsmart the AI!
 
-In the project directory, you can run:
+## 🎮 Play Now
 
-### `npm start`
+[**Play Tic Tac Toe vs AI**](https://Pied-Piper46.github.io/tic-tac-toe-rl)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## ✨ Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Reinforcement Learning AI**: Challenge an AI opponent trained using Q-learning algorithms
+- **Multiple Difficulty Levels**: Choose from Easy, Normal, or Advanced AI models
+- **Responsive Design**: Enjoy smooth gameplay on any device
+- **Real-time Feedback**: Clear visual indicators show game progress and results
+- **Confetti Celebration**: Experience a delightful celebration when you win
 
-### `npm test`
+## 🤖 About the AI
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+This game features an AI opponent trained through reinforcement learning, specifically using the Q-learning algorithm. The AI learns optimal moves by playing thousands of games against itself and building a Q-table that maps game states to move values.
 
-### `npm run build`
+### How the AI Works
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+The reinforcement learning process involves:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+1. **State Representation**: Each board configuration is represented as a unique state
+2. **Q-Table**: Stores the expected reward for each possible action in each state
+3. **Exploration vs. Exploitation**: The AI balances trying new moves and using known good moves
+4. **Reward System**: Wins are rewarded, losses are penalized, and draws have neutral value
+5. **Learning Rate**: The AI gradually improves its strategy through continuous training
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+The game includes three pre-trained models with different skill levels, allowing players to enjoy matches appropriate to their experience.
 
-### `npm run eject`
+## 🖼️ Game Screenshots
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### Initial Setup Screen
+![Setup Screen](./images/initial_screen.webp)
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Gameplay
+![Gameplay](./images/gameplay_screen.webp)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### Victory Celebration
+![Victory](./images/game_end_screen.webp)
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🛠️ Technology Stack
 
-## Learn More
+- **Frontend**: React.js with CSS transitions for smooth animations
+- **AI Backend**: Python-based reinforcement learning implementation
+- **State Management**: React hooks for efficient state handling
+- **Deployment**: GitHub Pages for easy access
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🧠 Reinforcement Learning Details
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+The AI opponent uses a Q-learning approach, a type of model-free reinforcement learning algorithm. The implementation includes:
 
-### Code Splitting
+- **Q-Table**: A mapping of state-action pairs to expected rewards
+- **Learning Rate (α)**: Controls how quickly the AI adapts to new information
+- **Discount Factor (γ)**: Balances immediate vs. future rewards
+- **Exploration Rate (ε)**: Controls the balance between trying new strategies and using known good ones
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+The Q-learning agent improves over time by updating its Q-values according to the formula:
 
-### Analyzing the Bundle Size
+```
+Q(s,a) = Q(s,a) + α * (r + γ * max(Q(s',a')) - Q(s,a))
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Where:
+- s is the current state
+- a is the action taken
+- r is the reward received
+- s' is the new state
+- a' represents all possible actions in the new state
 
-### Making a Progressive Web App
+## 🎯 How to Play
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+1. Select a difficulty level (Easy, Normal, or Advanced)
+2. Choose whether to play as the first player (X) or second player (O)
+3. Click "Start Game" to begin
+4. Take turns placing your mark in empty cells
+5. The first player to get three marks in a row (horizontally, vertically, or diagonally) wins
+6. If all cells are filled without a winner, the game ends in a draw
 
-### Advanced Configuration
+## 🔮 Future Enhancements
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- Additional AI training methods
+- Multiplayer mode
+- Customizable board sizes
+- Game statistics tracking
+- Mobile app version
 
-### Deployment
+## 📝 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+This project is open source and available under the MIT License.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Enjoy the game and see if you can outsmart the AI! Feedback and contributions are always welcome.
