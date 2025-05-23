@@ -373,7 +373,6 @@ function Game() {
                     playerMark={playerMark}
                     aiMark={aiMark}
                     winningLine={gameResult.line}
-                    winningLineIndex={gameResult.lineIndex}
                 />
                 <div className="status-message-wrapper">
                     <SwitchTransition mode="out-in">
