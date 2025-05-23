@@ -1,15 +1,10 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './Board';
-import ModelSelector from './ModelSelector';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import './Game.css';
-import WinnerModal from './WinnerModal';
 import Confetti from 'react-confetti';
 
-// The first model which is defined in ModelSelector.js will be a default model
-// Ajust the model name if you change the order of models in ModelSelector.js
-const initialModelFile = 'q_table_easy.json';
 
 const models = [
     { file: 'q_table_easy.json', name: 'Easy Model', description: '★☆☆' },
@@ -23,7 +18,7 @@ function Game() {
     const [gameResult, setGameResult] = useState({ winner: null, line: null, lineIndex: null }); // Changed from winner
     const [qTable, setQTable] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    const [currentQTableFile, setCurrentQTableFile] = useState(initialModelFile);
+    const [currentQTableFile, setCurrentQTableFile] = useState(models[0].file);
     const [playerMark, setPlayerMark] = useState('X'); // human player
     const [aiMark, setAiMark] = useState('O'); // AI player
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
@@ -39,32 +34,12 @@ function Game() {
     }, []);
 
 
-    const startGame = (playerIsFirst) => {
-        setBoard(initialBoard());
-        setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
-        if (playerIsFirst) {
-            setPlayerMark('X');
-            setAiMark('O');
-            setIsPlayerNext(true);
-        } else {
-            setPlayerMark('O');
-            setAiMark('X');
-            setIsPlayerNext(false);
-        }
-        setGameStarted(true);
-    };
-
     const resetGameToSetup = () => {
         setGameStarted(false);
         setPlayerChoice(null);
         setBoard(initialBoard());
         setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
         setShowConfetti(false);
-    };
-
-    const handleModelChange = (newModelFile) => {
-        setCurrentQTableFile(newModelFile);
-        resetGameToSetup();
     };
 
     const handleModelSelect = (modelFile) => {
@@ -344,22 +319,6 @@ function Game() {
                             Start Game
                         </button>
                     </div>
-
-                {/* <div className="model-selector-container">
-                    <ModelSelector
-                    currentModelFile={currentQTableFile}
-                    onChangeModel={handleModelChange}
-                    disabled={isLoading}
-                    />
-                </div>
-                <h2>First or Second？</h2>
-                <div className="start-options">
-                    <button onClick={() => startGame(true)} disabled={isLoading}>First (X)</button>
-                    <button onClick={() => startGame(false)} disabled={isLoading}>Second (O)</button>
-                </div>
-                {isLoading && <p className="loading-text">Loading...</p>}
-                </div> */}
-
                 </div>
             )}
 
@@ -392,14 +351,6 @@ function Game() {
                 </main>
             )}
 
-            {/* Modal for winner */}
-            {/* {gameResult.winner && gameResult.winner !== 'draw' && (
-                <WinnerModal
-                    winner={gameResult.winner}
-                    playerMark={playerMark}
-                    onRestart={resetGameToSetup}
-                />
-            )} */}
 
             {/* Confetti effect */}
             {showConfetti && <Confetti />}
