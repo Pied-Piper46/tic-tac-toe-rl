@@ -1,12 +1,16 @@
 import React from 'react';
 import Game from './Game';
-import './App.css';
+import SpaceBackground from './SpaceBackground';
+import './SpaceTheme.css';
 
 function App() {
   return (
-    <div className="App">
-      <Game />
-    </div>
+    <>
+      <SpaceBackground />
+      <div className="App">
+        <Game />
+      </div>
+    </>
   );
 }
 

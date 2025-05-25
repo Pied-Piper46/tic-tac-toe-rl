@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './Board';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import './Game.css';
-import Confetti from 'react-confetti';
+import { motion, AnimatePresence } from 'framer-motion';
+import SpaceBackground from './SpaceBackground';
+import './SpaceTheme.css';
 
 
 const models = [
@@ -24,7 +25,6 @@ function Game() {
     const [gameStarted, setGameStarted] = useState(false); // true if game has started
     const [isPageLoaded, setIsPageLoaded] = useState(false);
     const statusRef = useRef(null);
-    const [showConfetti, setShowConfetti] = useState(false);
     const [playerChoice, setPlayerChoice] = useState(null);
 
 
@@ -39,7 +39,6 @@ function Game() {
         setPlayerChoice(null);
         setBoard(initialBoard());
         setGameResult({ winner: null, line: null, lineIndex: null }); // Reset gameResult
-        setShowConfetti(false);
     };
 
     const handleModelSelect = (modelFile) => {
@@ -55,7 +54,6 @@ function Game() {
 
         setBoard(initialBoard());
         setGameResult({ winner: null, line: null, lineIndex: null });
-        setShowConfetti(false);
 
         if (playerChoice === 'first') {
             setPlayerMark('X');
@@ -224,22 +222,6 @@ function Game() {
         // Add gameResult.winner to dependency array
     }, [isPlayerNext, board, gameResult.winner, aiMark, getAIMove, isLoading, gameStarted]);
 
-
-    // Show confetti if there's a winner
-    useEffect(() => {
-        if (gameResult.winner && gameResult.winner !== 'draw') {
-            if (gameResult.winner === playerMark) {
-                setShowConfetti(true);
-                const timer = setTimeout(() => setShowConfetti(false), 10000);
-                return () => clearTimeout(timer);
-            } else {
-                setShowConfetti(false); // Hide confetti if AI wins
-            }
-        } else {
-            setShowConfetti(false); // Hide confetti if there's no winner
-        }
-    }, [gameResult, playerMark]);
-
     let status;
     if (isLoading && !gameStarted) {
         status = 'Select a model and First/Second to start the game';
@@ -256,11 +238,57 @@ function Game() {
         status = `Next player: ${isPlayerNext ? `You (${playerMark})` : `AI (${aiMark})`}`;
     }
 
+    const containerVariants = {
+        hidden: { opacity: 0, scale: 0.8 },
+        visible: { 
+            opacity: 1, 
+            scale: 1,
+            transition: { 
+                duration: 0.8,
+                ease: "easeOut",
+                staggerChildren: 0.2
+            }
+        }
+    };
+
+    const itemVariants = {
+        hidden: { y: 50, opacity: 0 },
+        visible: { 
+            y: 0, 
+            opacity: 1,
+            transition: { duration: 0.6, ease: "easeOut" }
+        }
+    };
+
     return (
-        <div className={`game-container ${isPageLoaded ? 'loaded' : ''}`}>
-            <header className="game-header">
-                <h1>TIC TAC TOE (vs AI)</h1>
-            </header>
+        <motion.div 
+            className={`game-container ${isPageLoaded ? 'loaded' : ''}`}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+        >
+            <motion.header className="game-header" variants={itemVariants}>
+                <motion.h1
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ 
+                        type: "spring",
+                        stiffness: 260,
+                        damping: 20,
+                        delay: 0.3
+                    }}
+                >
+                    TIC TAC TOE
+                </motion.h1>
+                <motion.p 
+                    className="game-subtitle"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.8, duration: 0.6 }}
+                >
+                    vs AI
+                </motion.p>
+            </motion.header>
 
             {/* Set up display */}
             {!gameStarted && (
@@ -341,7 +369,12 @@ function Game() {
                         timeout={300} // アニメーション時間をミリ秒で指定
                         classNames="fade"
                         >
-                            <p className="status-message" ref={statusRef}>{status}</p>
+                            <p 
+                                className={`status-message ${gameResult.winner && gameResult.winner !== 'draw' ? 'victory' : ''}`} 
+                                ref={statusRef}
+                            >
+                                {status}
+                            </p>
                         </CSSTransition>
                     </SwitchTransition>
                 </div>
@@ -352,9 +385,38 @@ function Game() {
             )}
 
 
-            {/* Confetti effect */}
-            {showConfetti && <Confetti />}
-        </div>
+            {/* Victory Effects */}
+            {gameResult.winner && gameResult.winner !== 'draw' && (
+                <>
+                    {/* Victory Overlay */}
+                    <motion.div 
+                        className="victory-overlay"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1 }}
+                    />
+                    
+                    {/* Victory Particles */}
+                    <motion.div 
+                        className="victory-particles"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.3, duration: 0.7 }}
+                    >
+                        {[...Array(20)].map((_, i) => (
+                            <div 
+                                key={i} 
+                                className="particle"
+                                style={{
+                                    left: `${Math.random() * 100}%`,
+                                    animationDelay: `${Math.random() * 2}s`
+                                }}
+                            />
+                        ))}
+                    </motion.div>
+                </>
+            )}
+        </motion.div>
     );
 }
 
