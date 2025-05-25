@@ -69,6 +69,7 @@ body::before {
     rgba(10, 10, 10, 0.95) 0%, 
     rgba(20, 20, 40, 0.9) 50%, 
     rgba(10, 10, 10, 0.95) 100%);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
   border: 2px solid transparent;
   background-clip: padding-box;
@@ -86,6 +87,16 @@ body::before {
   box-shadow: 
     0 0 50px rgba(0, 212, 255, 0.3),
     inset 0 0 50px rgba(255, 0, 110, 0.1);
+}
+
+/* モバイル用のフォールバック */
+@supports not (backdrop-filter: blur(20px)) {
+  .App {
+    background: linear-gradient(135deg, 
+      rgba(10, 10, 10, 0.98) 0%, 
+      rgba(20, 20, 40, 0.95) 50%, 
+      rgba(10, 10, 10, 0.98) 100%);
+  }
 }
 
 .App::before {
