@@ -1,6 +1,6 @@
 {
   "name": "tic-tac-toe-rl",
-  "version": "0.3.3",
+  "version": "1.0.0",
   "private": true,
   "homepage": "https://Pied-Piper46.github.io/tic-tac-toe-rl",
   "dependencies": {
