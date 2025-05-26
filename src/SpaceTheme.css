@@ -1178,6 +1178,20 @@ body::before {
     padding: 10px;
   }
 
+  /* モバイルでは背景アニメーションを無効化 */
+  body::before {
+    animation: none;
+    background: 
+      radial-gradient(2px 2px at 20px 30px, var(--space-primary), transparent),
+      radial-gradient(2px 2px at 40px 70px, var(--space-secondary), transparent),
+      radial-gradient(1px 1px at 90px 40px, var(--space-accent), transparent),
+      radial-gradient(1px 1px at 130px 80px, var(--space-gold), transparent),
+      radial-gradient(2px 2px at 160px 30px, var(--space-cyan), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    opacity: 0.3;
+  }
+
   .App {
     width: 95vw;
     padding: 25px 20px;
