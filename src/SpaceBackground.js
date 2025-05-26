@@ -48,8 +48,8 @@ function Stars(props) {
   );
 }
 
-// CSS背景のフォールバック
-function CSSSpaceBackground() {
+// モバイル専用のリッチな黒色背景
+function MobileRichBackground() {
   return (
     <div style={{
       position: 'fixed',
@@ -59,16 +59,13 @@ function CSSSpaceBackground() {
       height: '100%',
       zIndex: -1,
       background: `
-        radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%),
-        radial-gradient(2px 2px at 20px 30px, #00d4ff, transparent),
-        radial-gradient(2px 2px at 40px 70px, #ff006e, transparent),
-        radial-gradient(1px 1px at 90px 40px, #8338ec, transparent),
-        radial-gradient(1px 1px at 130px 80px, #ffbe0b, transparent),
-        radial-gradient(2px 2px at 160px 30px, #3a86ff, transparent)
+        linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 25%, #16213e 50%, #0f0f23 75%, #0a0a0a 100%),
+        radial-gradient(circle at 20% 80%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 0, 110, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(131, 56, 236, 0.06) 0%, transparent 50%)
       `,
-      backgroundSize: '100% 100%, 200px 100px, 200px 100px, 200px 100px, 200px 100px, 200px 100px',
-      backgroundRepeat: 'no-repeat, repeat, repeat, repeat, repeat, repeat',
-      animation: 'sparkle 20s linear infinite'
+      backgroundSize: '100% 100%, 100% 100%, 100% 100%, 100% 100%',
+      backgroundAttachment: 'fixed'
     }} />
   );
 }
@@ -91,9 +88,9 @@ function SpaceBackground() {
     }
   }, []);
 
-  // モバイルまたはWebGL非サポートの場合はCSS背景を使用
+  // モバイルまたはWebGL非サポートの場合はモバイル専用背景を使用
   if (isMobile || !webGLSupported) {
-    return <CSSSpaceBackground />;
+    return <MobileRichBackground />;
   }
 
   // デスクトップでWebGLサポートありの場合はThree.js背景を使用

@@ -124,8 +124,8 @@ body::before {
 /* Header Styles */
 .game-header {
   position: relative;
-  margin-bottom: 25px;
-  padding: 20px 0;
+  margin-bottom: 15px;
+  padding: 10px 0;
 }
 
 .game-header::before {
@@ -192,9 +192,9 @@ body::before {
 .game-setup {
   display: flex;
   flex-direction: column;
-  gap: 50px;
+  gap: 20px;
   width: 100%;
-  padding: 30px 0;
+  padding: 15px 0;
 }
 
 .setup-section {
@@ -221,9 +221,9 @@ body::before {
 
 .setup-section h2 {
   font-family: var(--space-font-primary);
-  font-size: 1.6em;
+  font-size: 1.4em;
   color: var(--space-cyan);
-  margin-bottom: 25px;
+  margin-bottom: 15px;
   text-align: center;
   font-weight: 700;
   text-shadow: 0 0 15px var(--space-cyan);
@@ -239,7 +239,7 @@ body::before {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
-  padding: 25px 5px 35px 5px;
+  padding: 15px 15px 20px 15px;
   width: 100%;
   justify-content: flex-start;
   -webkit-overflow-scrolling: touch;
@@ -270,7 +270,7 @@ body::before {
   flex-wrap: wrap;
   justify-content: center;
   gap: 20px;
-  padding: 25px 0 35px 0;
+  padding: 15px 0 20px 0;
 }
 
 /* Option Cards */
@@ -281,7 +281,7 @@ body::before {
   backdrop-filter: blur(15px);
   border: 1px solid rgba(0, 212, 255, 0.3);
   border-radius: 20px;
-  padding: 25px 20px;
+  padding: 18px 15px;
   cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   text-align: center;
@@ -397,12 +397,16 @@ body::before {
 /* Model Cards */
 .model-option-card {
   flex: 0 0 auto;
-  width: 170px;
-  min-height: 150px;
+  width: 150px;
+  min-height: 120px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-right: 15px;
+  margin: 0 10px;
+}
+
+.model-option-card:first-child {
+  margin-left: 0;
 }
 
 .model-option-card:last-child {
@@ -411,20 +415,20 @@ body::before {
 
 /* Player Cards */
 .player-option-card {
-  padding: 20px;
+  padding: 15px;
   display: grid;
   align-items: center;
-  gap: 10px;
-  min-height: 140px;
+  gap: 8px;
+  min-height: 110px;
   flex: 1;
-  max-width: 200px;
+  max-width: 180px;
 }
 
 .player-option-card .mark-icon {
-  font-size: 3.5em;
+  font-size: 3em;
   font-weight: bold;
   line-height: 1;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   position: relative;
   z-index: 1;
@@ -1178,6 +1182,20 @@ body::before {
     padding: 10px;
   }
 
+  /* モバイルでは背景アニメーションを無効化 */
+  body::before {
+    animation: none;
+    background: 
+      radial-gradient(2px 2px at 20px 30px, var(--space-primary), transparent),
+      radial-gradient(2px 2px at 40px 70px, var(--space-secondary), transparent),
+      radial-gradient(1px 1px at 90px 40px, var(--space-accent), transparent),
+      radial-gradient(1px 1px at 130px 80px, var(--space-gold), transparent),
+      radial-gradient(2px 2px at 160px 30px, var(--space-cyan), transparent);
+    background-repeat: repeat;
+    background-size: 200px 100px;
+    opacity: 0.3;
+  }
+
   .App {
     width: 95vw;
     padding: 25px 20px;
@@ -1198,12 +1216,22 @@ body::before {
   }
 
   .options-grid.model-options {
-    justify-content: center;
+    justify-content: flex-start;
     gap: 15px;
+    padding: 15px 20px 20px 20px;
   }
 
   .model-option-card {
-    width: 150px;
+    width: 140px;
+    min-height: 100px;
+    margin: 0 8px;
+  }
+
+  .model-option-card:first-child {
+    margin-left: 0;
+  }
+
+  .model-option-card:last-child {
     margin-right: 0;
   }
 

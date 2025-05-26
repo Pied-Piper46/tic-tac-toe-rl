@@ -2,8 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Board from './Board';
 import { initialBoard, calculateWinner, boardToQTableKey, getAvailableMoves } from './gameLogic';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
-import { motion, AnimatePresence } from 'framer-motion';
-import SpaceBackground from './SpaceBackground';
+import { motion } from 'framer-motion';
 import './SpaceTheme.css';
 
 
